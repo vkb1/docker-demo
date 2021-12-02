@@ -1,6 +1,6 @@
 pipeline {
   environment {
-    imagename = "arjunachari12/docker-nodejs-demo"
+    imagename = "arjunachari12/test-docker"
     registryCredential = 'dockerhub'
     dockerImage = ''
   }
