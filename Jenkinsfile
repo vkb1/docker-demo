@@ -1,23 +1,41 @@
-node {    
-      def app     
-      stage('Clone repository') {               
-             
-            checkout scm    
-      }     
-      stage('Build image') {         
-       
-            app = docker.build("arjunachari12/docker-nodejs-demo")    
-      }     
-      stage('Test image') {           
-            app.inside {            
-             
-             sh 'echo "Tests passed"'        
-            }    
-      }     
-      stage('Push image') {
-      docker.withRegistry('https://registry.hub.docker.com', 'dockerhub_id') {            
-      app.push("${env.BUILD_NUMBER}")            
-      app.push("latest")        
-              }    
-           }
+pipeline {
+  environment {
+    imagename = "arjunachari12/docker-nodejs-demo"
+    registryCredential = 'dockerhub'
+    dockerImage = ''
+  }
+  agent any
+  stages {
+    stage('Cloning Git') {
+      steps {
+        git([url: 'https://github.com/arjunachari12/docker-demo.git', branch: 'master'])
+
       }
+    }
+    stage('Building image') {
+      steps{
+        script {
+          dockerImage = docker.build imagename
+        }
+      }
+    }
+    stage('Deploy Image') {
+      steps{
+        script {
+          docker.withRegistry( '', registryCredential ) {
+            dockerImage.push("$BUILD_NUMBER")
+             dockerImage.push('latest')
+
+          }
+        }
+      }
+    }
+    stage('Remove Unused docker image') {
+      steps{
+        sh "docker rmi $imagename:$BUILD_NUMBER"
+         sh "docker rmi $imagename:latest"
+
+      }
+    }
+  }
+}
