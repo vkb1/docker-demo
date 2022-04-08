@@ -1,21 +1,41 @@
 pipeline {
   environment {
     imagename = "bvinodkumar2008/docker-jenkins-proj"
-    registryCreds = "docker-creds"
+    registryCredential = 'docker-creds'
     dockerImage = ''
   }
   agent any
   stages {
-    stage('Clone src') {
+    stage('Cloning Git') {
       steps {
-        git([url: 'https://github.com/vkb1/docker-demo', branch: 'master'])
+        git([url: 'https://github.com/vkb1/docker-demo.git', branch: 'master'])
+
+      }
     }
-    
-    stage('Build image') {
-      steps {
-        dockerImage = docker.build imagename
+    stage('Building image') {
+      steps{
+        script {
+          dockerImage = docker.build imagename
+        }
+      }
+    }
+    stage('Deploy Image') {
+      steps{
+        script {
+          docker.withRegistry( '', registryCredential ) {
+            dockerImage.push("$BUILD_NUMBER")
+             dockerImage.push('latest')
+
+          }
+        }
+      }
+    }
+    stage('Remove Unused docker image') {
+      steps{
+        sh "docker rmi $imagename:$BUILD_NUMBER"
+         sh "docker rmi $imagename:latest"
+
       }
     }
   }
-  
 }
