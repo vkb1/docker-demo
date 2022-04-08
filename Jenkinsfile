@@ -11,6 +11,7 @@ pipeline {
         sh 'ls -al'
         sh 'pwd'
         git([url: 'https://github.com/vkb1/docker-demo.git', branch: 'master'])
+        sh 'ls -al'
         sh 'pwd'
       }
     }
