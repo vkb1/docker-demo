@@ -6,15 +6,6 @@ pipeline {
   }
   agent any
   stages {
-    stage('Cloning Git') {
-      steps {
-        sh 'ls -al'
-        sh 'pwd'
-        git([url: 'https://github.com/vkb1/docker-demo.git', branch: 'master'])
-        sh 'ls -al'
-        sh 'pwd'
-      }
-    }
     stage('Building image') {
       steps{
         sh 'pwd'
