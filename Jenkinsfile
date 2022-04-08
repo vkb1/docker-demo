@@ -8,15 +8,19 @@ pipeline {
   stages {
     stage('Cloning Git') {
       steps {
+        sh 'tree'
+        sh 'pwd'
         git([url: 'https://github.com/vkb1/docker-demo.git', branch: 'master'])
-
+        sh 'pwd'
       }
     }
     stage('Building image') {
       steps{
+        sh 'pwd'
         script {
           dockerImage = docker.build imagename
         }
+        sh 'pwd'
       }
     }
     stage('Deploy Image') {
